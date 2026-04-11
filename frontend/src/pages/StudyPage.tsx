@@ -179,7 +179,6 @@ export default function StudyPage() {
     setFinishing(true);
     setError('');
 
-    // 이미 종료된 경우 AI 재생성만 시도
     if (isFinished) {
       try {
         const aiResult = await studyDaysApi.regenerateAI(date);
@@ -205,7 +204,6 @@ export default function StudyPage() {
       return;
     }
 
-    // localStates에 있는 미저장 값들을 store 및 서버에 반영
     const savePromises: Promise<unknown>[] = [];
     localStates.forEach((local, sessionId) => {
       const patch: { focus_level?: number | null; distraction?: string | null } = {
@@ -250,40 +248,49 @@ export default function StudyPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6">
-      <div className="mb-5 flex items-center justify-between">
+    <div className="mx-auto max-w-2xl px-6 pt-24 pb-16 space-y-6">
+      {/* Top navigation */}
+      <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-gray-600"
+          className="flex items-center gap-1.5 text-sm font-medium text-[#becaba] opacity-60 hover:opacity-100 transition-opacity"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" viewBox="0 0 20 20" fill="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
           돌아가기
         </button>
-        <h2 className="text-base font-bold text-gray-800">{date}</h2>
-        <div className="w-16" />
+        <div className="flex flex-col items-end">
+          <span className="font-headline text-base font-bold text-[#e5e2e1]">{date}</span>
+          {today && (
+            <span className="text-[11px] font-medium text-[#7bdb85]">오늘</span>
+          )}
+        </div>
       </div>
 
-      {error && (
-        <div className="mb-4">
-          <ErrorMessage message={error} />
-        </div>
-      )}
+      {error && <ErrorMessage message={error} />}
 
+      {/* Stats bar */}
       {studyDay && isReview && (
-        <div className="mb-5 overflow-hidden rounded-2xl bg-white shadow-card">
-          <div className="flex items-center justify-between px-5 py-3.5">
-            <div className="flex items-center gap-2.5">
-              <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-600">
-                공부 {studyDay.total_study_minutes}분
-              </span>
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-500">
-                휴식 {studyDay.total_rest_minutes}분
-              </span>
-            </div>
-            <span className="text-xs font-semibold text-gray-500">
-              평균 집중도 <span className="text-green-600">{studyDay.avg_focus_ceil}/5</span>
+        <div className="flex items-center gap-4 bg-[#1c1b1b] rounded-xl px-5 py-4">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] font-medium uppercase tracking-wide text-[#becaba]/60">공부</span>
+            <span className="font-headline text-xl font-bold tabular-nums text-[#e5e2e1]">
+              {studyDay.total_study_minutes}<span className="ml-0.5 text-xs font-normal text-[#becaba]">분</span>
+            </span>
+          </div>
+          <div className="h-8 w-px bg-[#3f4a3e]" />
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] font-medium uppercase tracking-wide text-[#becaba]/60">휴식</span>
+            <span className="font-headline text-xl font-bold tabular-nums text-[#becaba]">
+              {studyDay.total_rest_minutes}<span className="ml-0.5 text-xs font-normal text-[#becaba]/60">분</span>
+            </span>
+          </div>
+          <div className="h-8 w-px bg-[#3f4a3e]" />
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[10px] font-medium uppercase tracking-wide text-[#becaba]/60">집중도</span>
+            <span className="font-headline text-xl font-bold tabular-nums text-[#7bdb85]">
+              {studyDay.avg_focus_ceil}<span className="ml-0.5 text-xs font-normal text-[#becaba]/60">/5</span>
             </span>
           </div>
         </div>
@@ -308,7 +315,7 @@ export default function StudyPage() {
       />
 
       {showFinishButton && (
-        <div className="mt-5 flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 pt-2">
           {!isFinished && (
             showTimerSetup ? (
               <TimerSetup
@@ -319,11 +326,15 @@ export default function StudyPage() {
               <button
                 onClick={() => setShowTimerSetup(true)}
                 disabled={activeSessionId !== null}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-2xl text-white shadow-lg shadow-green-600/30 transition-all duration-200 hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/40 active:scale-95 disabled:opacity-50 disabled:shadow-none"
+                className="flex items-center gap-2 rounded-full bg-gradient-to-br from-[#7bdb85] to-[#44a354] text-[#002107] font-headline font-bold py-3 px-8 shadow-lg shadow-[#39994B]/20 transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:shadow-none disabled:scale-100"
                 aria-label="세션 추가"
                 data-testid="add-session-button"
               >
-                +
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                세션 추가
               </button>
             )
           )}
@@ -344,7 +355,7 @@ export default function StudyPage() {
       )}
 
       {isReview && (
-        <div className="mt-6 flex flex-col gap-4 animate-slide-up">
+        <div className="flex flex-col gap-4 animate-slide-up">
           <FocusChart sessions={sessions} />
           <AISummary summary={studyDay?.ai_summary ?? null} />
           <AIFeedback feedback={studyDay?.ai_feedback ?? null} />

@@ -7,24 +7,37 @@ html {
 }
 
 body {
-  @apply bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen text-gray-900 antialiased;
+  min-height: 100vh;
+  background-color: #131313;
+  color: #e5e2e1;
+  font-family: 'Inter', system-ui, sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  @apply bg-green-200 text-green-900;
+  background-color: #44a354;
+  color: #e5e2e1;
 }
 
-/* Subtle scrollbar styling */
+/* Refined scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full;
+  background: #3f4a3e;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
+  background: #becaba;
+}
+
+:focus-visible {
+  outline: 2px solid #7bdb85;
+  outline-offset: 2px;
 }

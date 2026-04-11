@@ -21,7 +21,6 @@ export default function HeatmapGrid({ year, month, days, onDayClick }: HeatmapGr
   }, [days]);
 
   const daysInMonth = getDaysInMonth(year, month);
-
   const handleDayClick = (day: number) => {
     const m = String(month).padStart(2, '0');
     const d = String(day).padStart(2, '0');

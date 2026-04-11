@@ -10,15 +10,18 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<Variant, string> = {
-  primary: 'bg-green-600 hover:bg-green-700 active:bg-green-800 text-white shadow-sm hover:shadow-md',
-  secondary: 'bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 border border-gray-200 hover:border-gray-300',
-  danger: 'bg-red-500 hover:bg-red-600 active:bg-red-700 text-white shadow-sm hover:shadow-md',
+  primary:
+    'bg-[#44a354] text-[#002107] hover:bg-[#7bdb85] active:bg-[#39994B]',
+  secondary:
+    'bg-[#2a2a2a] text-[#e5e2e1] border border-[#3f4a3e] hover:bg-[#353534] active:bg-[#3f4a3e]',
+  danger:
+    'bg-red-600 text-white hover:bg-red-500 active:bg-red-700',
 };
 
 const sizeStyles: Record<Size, string> = {
-  sm: 'px-3.5 py-1.5 text-sm',
+  sm: 'px-3.5 py-1.5 text-xs',
   md: 'px-5 py-2.5 text-sm',
-  lg: 'px-6 py-3 text-base',
+  lg: 'px-6 py-3 text-sm',
 };
 
 export default function Button({
@@ -31,7 +34,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={`rounded-xl font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7bdb85] focus-visible:ring-offset-2 focus-visible:ring-offset-[#131313] disabled:cursor-not-allowed disabled:opacity-40 active:scale-[0.98] ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
       disabled={disabled}
       {...rest}
     >

@@ -38,30 +38,23 @@ export default function SessionCard({
   const isStudy = session.type === 'study';
   const isRunning = session.status === 'running';
 
-  const shapeClass = isStudy
-    ? 'rounded-lg'
-    : 'rounded-full aspect-square flex items-center justify-center';
-
-  const borderColor = isStudy ? 'border-green-200' : 'border-blue-200';
-  const bgColor = isStudy ? 'bg-green-50' : 'bg-blue-50';
-
   if (!isStudy) {
     return (
       <div
-        className={`${shapeClass} ${borderColor} ${bgColor} border p-4 w-24 h-24 sm:w-28 sm:h-28 mx-auto relative shadow-soft`}
+        className="flex items-center justify-center"
         data-testid={`session-card-${session.id}`}
       >
-        {!isReview && onDelete && (
-          <div className="absolute top-1 right-1">
-            <SessionMenu onDelete={onDelete} />
-          </div>
-        )}
-        <div className="flex flex-col items-center gap-1 text-center">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-500">휴식</span>
+        <div className="relative flex h-20 w-20 flex-col items-center justify-center rounded-full border border-[#3f4a3e] bg-[#1c1b1b]">
+          {!isReview && onDelete && (
+            <div className="absolute -top-1 -right-1">
+              <SessionMenu onDelete={onDelete} />
+            </div>
+          )}
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#becaba]/60">휴식</span>
           {isRunning && timerState ? (
-            <TimerDisplay {...timerState} />
+            <TimerDisplay {...timerState} compact />
           ) : (
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-sm font-bold tabular-nums text-[#becaba]">
               {session.duration_minutes}분
             </span>
           )}
@@ -72,33 +65,47 @@ export default function SessionCard({
 
   return (
     <div
-      className={`${shapeClass} relative border p-4 bg-white shadow-card transition-shadow hover:shadow-elevated ${isRunning ? 'ring-2 ring-green-400 ring-offset-1' : borderColor}`}
+      className={`relative overflow-hidden rounded-xl bg-[#1c1b1b] transition-all duration-200 ${
+        isRunning ? 'border border-[#7bdb85]/40' : 'border border-[#3f4a3e]/60 hover:bg-[#201f1f]'
+      }`}
       data-testid={`session-card-${session.id}`}
     >
-      <div className="mb-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-green-600">
-            공부 #{studyIndex ?? session.order_num}
-          </span>
-          {!isRunning && (
-            <span className="text-xs font-medium text-gray-400">
-              {session.duration_minutes}분
-            </span>
-          )}
-        </div>
-        {!isReview && onDelete && (
-          <SessionMenu onDelete={onDelete} />
-        )}
-      </div>
-
-      {isRunning && timerState && (
-        <div className="mb-3">
-          <TimerDisplay {...timerState} />
-        </div>
+      {/* Running indicator */}
+      {isRunning && (
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#7bdb85] to-[#44a354]" />
       )}
 
-      {isStudy && (
-        <div className="flex flex-col gap-2">
+      <div className="p-4">
+        {/* Header */}
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${
+              isRunning ? 'bg-[#44a354] text-[#002107]' : 'bg-[#2a2a2a] text-[#becaba]'
+            }`}>
+              {studyIndex ?? session.order_num}
+            </div>
+            <span className="text-xs font-semibold text-[#e5e2e1]">공부 세션</span>
+            {!isRunning && (
+              <span className="rounded-full bg-[#2a2a2a] px-2 py-0.5 text-[11px] font-medium text-[#becaba]">
+                {session.duration_minutes}분
+              </span>
+            )}
+          </div>
+          {!isReview && onDelete && (
+            <SessionMenu onDelete={onDelete} />
+          )}
+        </div>
+
+        {/* Timer */}
+        {isRunning && timerState && (
+          <div className="mb-3 flex items-center gap-2 rounded-xl bg-[#39994B]/10 px-3 py-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-[#7bdb85]" />
+            <TimerDisplay {...timerState} />
+          </div>
+        )}
+
+        {/* Focus & Distraction */}
+        <div className="flex flex-col gap-2.5">
           <FocusLevelInput
             value={isReview ? session.focus_level : (localFocusLevel ?? session.focus_level)}
             onChange={(level) => onFocusChange?.(level)}
@@ -117,7 +124,7 @@ export default function SessionCard({
             />
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

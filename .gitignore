@@ -27,5 +27,8 @@ pgdata/
 # Claude
 .claude/
 
+# design
+frontend/design_examples/
+
 # Workspace docs (개발 산출물, 선택적)
 # _workspace/

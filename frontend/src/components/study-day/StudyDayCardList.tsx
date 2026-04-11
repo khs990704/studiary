@@ -36,8 +36,7 @@ export default function StudyDayCardList({
   if (studyDays.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-16 text-center">
-        <div className="text-3xl opacity-30">&#128218;</div>
-        <p className="text-sm text-gray-400">이 달에는 공부 기록이 없습니다.</p>
+        <p className="text-sm text-[#becaba]/60">이 달에는 공부 기록이 없습니다.</p>
       </div>
     );
   }

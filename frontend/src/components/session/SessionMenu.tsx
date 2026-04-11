@@ -30,7 +30,7 @@ export default function SessionMenu({ onDelete }: SessionMenuProps) {
     <div className="relative" ref={tooltipRef}>
       <button
         onClick={() => setShowTooltip((v) => !v)}
-        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+        className="rounded p-1 text-[#becaba]/40 hover:text-[#becaba] transition-colors"
         aria-label="세션 메뉴"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -41,13 +41,13 @@ export default function SessionMenu({ onDelete }: SessionMenuProps) {
       </button>
 
       {showTooltip && (
-        <div className="absolute right-0 top-8 z-10 rounded-xl border border-gray-100 bg-white py-1 shadow-elevated animate-scale-in">
+        <div className="absolute right-0 top-8 z-10 rounded-xl border border-[#3f4a3e] bg-[#2a2a2a] py-1 shadow-elevated animate-scale-in">
           <button
             onClick={() => {
               setShowTooltip(false);
               setShowConfirm(true);
             }}
-            className="whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+            className="whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-[#353534]"
           >
             세션 삭제
           </button>
@@ -56,10 +56,10 @@ export default function SessionMenu({ onDelete }: SessionMenuProps) {
 
       {showConfirm && (
         <Modal onClose={() => setShowConfirm(false)}>
-          <h3 className="mb-2 text-lg font-semibold text-gray-800">
+          <h3 className="mb-2 text-lg font-semibold text-[#e5e2e1]">
             세션 삭제
           </h3>
-          <p className="mb-4 text-sm text-gray-600">
+          <p className="mb-4 text-sm text-[#becaba]">
             정말로 이 세션을 삭제하시겠습니까?
           </p>
           <div className="flex justify-end gap-2">

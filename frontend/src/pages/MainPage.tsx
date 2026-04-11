@@ -6,7 +6,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import { useStudyDayStore } from '../stores/studyDayStore';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { formatDate, isToday as checkIsToday } from '../utils/date';
-import Button from '../components/common/Button';
+import { HEATMAP_COLORS, HEATMAP_NO_RECORD_COLOR } from '../utils/constants';
 
 export default function MainPage() {
   const now = new Date();
@@ -62,43 +62,92 @@ export default function MainPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <div className="mb-6 overflow-hidden rounded-2xl bg-white shadow-card">
-        <div className="flex items-center justify-between px-5 py-4">
-          <h2 className="text-sm font-bold tracking-tight text-gray-800">
-            Study <span className="text-green-600">Heatmap</span>
-          </h2>
-          <MonthSelector year={year} month={month} onChange={handleMonthChange} />
-        </div>
-        <div className="px-5 pb-5">
-          <HeatmapGrid
-            year={year}
-            month={month}
-            days={heatmapData?.days ?? []}
-            onDayClick={handleDayClick}
-          />
-        </div>
-      </div>
+    <div className="mx-auto max-w-4xl px-6 pt-24 pb-16 space-y-8">
 
+      {/* Page header */}
+      <section className="space-y-2">
+        <h1 className="font-headline text-4xl font-bold tracking-tight text-[#e5e2e1] leading-tight">
+          Daily Growth
+        </h1>
+        <p className="text-[#becaba] text-sm">집중을 기록하고, 성장을 확인하세요.</p>
+      </section>
+
+      {/* Heatmap section */}
+      <section className="bg-[#1c1b1b] rounded-xl p-6 space-y-5">
+        {/* Section header */}
+        <div className="flex items-end justify-between">
+          <div className="space-y-1">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#7bdb85]">
+              Progress Tracker
+            </span>
+            <div className="flex items-center gap-3">
+              <h2 className="font-headline text-xl font-bold tracking-tight text-[#e5e2e1]">
+                잔디를 푸르게 푸르게
+              </h2>
+              <MonthSelector year={year} month={month} onChange={handleMonthChange} />
+            </div>
+          </div>
+          {/* Legend */}
+          <div className="flex items-center gap-1.5 text-[10px] text-[#becaba] opacity-60">
+            <span>Less</span>
+            <div className="flex gap-1">
+              <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: HEATMAP_NO_RECORD_COLOR }} />
+              {[1, 2, 3, 4, 5].map((lvl) => (
+                <div key={lvl} className="h-3 w-3 rounded-sm" style={{ backgroundColor: HEATMAP_COLORS[lvl] }} />
+              ))}
+            </div>
+            <span>More</span>
+          </div>
+        </div>
+
+        {/* Grid */}
+        <HeatmapGrid
+          year={year}
+          month={month}
+          days={heatmapData?.days ?? []}
+          onDayClick={handleDayClick}
+        />
+      </section>
+
+      {/* Action button */}
       {!isCurrentMonth ? (
-        <div className="mb-5 flex justify-center">
-          <Button onClick={handleGoToToday}>
-            오늘 날짜 돌아가기
-          </Button>
+        <div className="flex justify-center">
+          <button
+            onClick={handleGoToToday}
+            className="bg-gradient-to-br from-[#7bdb85] to-[#44a354] text-[#00320e] font-headline font-bold py-4 px-10 rounded-full flex items-center gap-3 shadow-lg shadow-[#39994B]/20 transition-transform hover:scale-105 active:scale-95"
+          >
+            ◀ Go Back Today
+          </button>
         </div>
       ) : !hasTodayRecord && (
-        <div className="mb-5 flex justify-center">
-          <Button onClick={() => navigate(`/study/${todayStr}`)}>
-            오늘 공부 시작하기
-          </Button>
+        <div className="flex justify-center">
+          <button
+            onClick={() => navigate(`/study/${todayStr}`)}
+            className="bg-gradient-to-br from-[#7bdb85] to-[#44a354] text-[#00320e] font-headline font-bold py-4 px-10 rounded-full flex items-center gap-3 shadow-lg shadow-[#39994B]/20 transition-transform hover:scale-105 active:scale-95"
+          >
+            Go Study ▶
+          </button>
         </div>
       )}
 
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <StudyDayCardList studyDays={studyDays} scrollTrigger={scrollTrigger} />
-      )}
+      {/* Study records section */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-headline text-xl font-bold tracking-tight text-[#e5e2e1]">
+            Recorded Studies
+          </h3>
+          <span className="text-sm text-[#becaba]">
+            {year}년 {month}월
+          </span>
+        </div>
+
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <StudyDayCardList studyDays={studyDays} scrollTrigger={scrollTrigger} />
+        )}
+      </section>
+
     </div>
   );
 }
