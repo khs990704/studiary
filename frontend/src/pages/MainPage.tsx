@@ -33,6 +33,10 @@ export default function MainPage() {
   }, [year, month, fetchStudyDays, fetchHeatmap]);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     loadData();
   }, [loadData]);
 
@@ -60,7 +64,12 @@ export default function MainPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
       <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4">
-        <MonthSelector year={year} month={month} onChange={handleMonthChange} />
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-base font-bold tracking-tight text-gray-800">
+            Study <span className="text-green-600">Heatmap</span>
+          </h2>
+          <MonthSelector year={year} month={month} onChange={handleMonthChange} />
+        </div>
         <div className="mt-4">
           <HeatmapGrid
             year={year}

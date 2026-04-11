@@ -17,6 +17,7 @@ export default function Header() {
           onClick={() => {
             const now = new Date();
             navigate(`/?year=${now.getFullYear()}&month=${now.getMonth() + 1}`);
+            window.scrollTo(0, 0);
           }}
           className="text-xl font-bold text-green-700"
         >

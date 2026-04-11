@@ -23,12 +23,9 @@ const StudyDayCard = forwardRef<HTMLDivElement, StudyDayCardProps>(
         {/* 상단 헤더 */}
         <div className="flex items-center justify-between bg-gray-50 px-5 py-3">
           <div className="flex items-center gap-2">
-            {today && (
-              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                오늘
-              </span>
-            )}
-            <span className="font-semibold text-gray-800">{studyDay.date}</span>
+            <span className={`font-semibold ${today ? 'text-green-600' : 'text-gray-800'}`}>
+              {studyDay.date}
+            </span>
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-500">
             <span>공부 <span className="font-medium text-gray-700">{studyDay.total_study_minutes}분</span></span>
