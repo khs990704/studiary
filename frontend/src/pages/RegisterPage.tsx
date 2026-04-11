@@ -19,6 +19,8 @@ export default function RegisterPage() {
     const errors: Record<string, string> = {};
 
     if (!email) errors.email = '이메일을 입력해주세요.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      errors.email = '올바른 이메일 형식을 입력해주세요.';
     if (!password) errors.password = '비밀번호를 입력해주세요.';
     else if (password.length < 8)
       errors.password = '비밀번호는 8자 이상이어야 합니다.';

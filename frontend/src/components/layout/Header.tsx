@@ -21,10 +21,12 @@ export default function Header() {
         </button>
         {user && (
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">{user.nickname}</span>
+            <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700">
+              {user.nickname}
+            </span>
             <button
               onClick={handleLogout}
-              className="text-sm text-gray-500 hover:text-gray-700"
+              className="rounded-md border border-gray-200 px-3 py-1 text-sm text-gray-500 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-500"
             >
               로그아웃
             </button>

@@ -16,6 +16,13 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('올바른 이메일 형식을 입력해주세요.');
+      return;
+    }
+
     setLoading(true);
     try {
       await login(email, password);
