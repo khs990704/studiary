@@ -14,7 +14,10 @@ export default function Header() {
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => {
+            const now = new Date();
+            navigate(`/?year=${now.getFullYear()}&month=${now.getMonth() + 1}`);
+          }}
           className="text-xl font-bold text-green-700"
         >
           Studiary

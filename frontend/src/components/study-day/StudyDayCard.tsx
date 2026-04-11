@@ -17,49 +17,59 @@ const StudyDayCard = forwardRef<HTMLDivElement, StudyDayCardProps>(
     return (
       <div
         ref={ref}
-        className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+        className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
         data-testid={`study-day-card-${studyDay.date}`}
       >
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800">{studyDay.date}</h3>
-          <span className="text-sm text-gray-500">
-            총 {totalMinutes}분 (공부 {studyDay.total_study_minutes}분 / 휴식{' '}
-            {studyDay.total_rest_minutes}분)
-          </span>
+        {/* 상단 헤더 */}
+        <div className="flex items-center justify-between bg-gray-50 px-5 py-3">
+          <div className="flex items-center gap-2">
+            {today && (
+              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                오늘
+              </span>
+            )}
+            <span className="font-semibold text-gray-800">{studyDay.date}</span>
+          </div>
+          <div className="flex items-center gap-3 text-xs text-gray-500">
+            <span>공부 <span className="font-medium text-gray-700">{studyDay.total_study_minutes}분</span></span>
+            <span className="text-gray-300">|</span>
+            <span>휴식 <span className="font-medium text-gray-700">{studyDay.total_rest_minutes}분</span></span>
+            <span className="text-gray-300">|</span>
+            <span>총 <span className="font-medium text-gray-700">{totalMinutes}분</span></span>
+          </div>
         </div>
 
-        {studyDay.ai_summary && (
-          <p className="mb-1 text-sm text-gray-600">
-            <span className="font-medium text-green-700">요약:</span>{' '}
-            {studyDay.ai_summary}
-          </p>
-        )}
+        {/* 본문 */}
+        <div className="divide-y divide-gray-100">
+          {studyDay.ai_summary && (
+            <div className="px-5 py-3">
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-green-600">요약</p>
+              <p className="text-sm leading-relaxed text-gray-600">{studyDay.ai_summary}</p>
+            </div>
+          )}
 
-        {studyDay.ai_feedback && (
-          <p className="mb-2 text-sm text-gray-600">
-            <span className="font-medium text-blue-700">피드백:</span>{' '}
-            {studyDay.ai_feedback}
-          </p>
-        )}
+          {studyDay.ai_feedback && (
+            <div className="px-5 py-3">
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-blue-500">피드백</p>
+              <p className="text-sm leading-relaxed text-gray-600">{studyDay.ai_feedback}</p>
+            </div>
+          )}
 
-        {today && !studyDay.is_finished && (
-          <Button
-            size="sm"
-            onClick={() => navigate(`/study/${studyDay.date}`)}
-            className="mt-2"
-          >
-            공부하러 가기
-          </Button>
-        )}
-
-        {(studyDay.is_finished || !today) && (
-          <button
-            onClick={() => navigate(`/study/${studyDay.date}`)}
-            className="mt-2 text-sm text-green-600 hover:underline"
-          >
-            기록 보기
-          </button>
-        )}
+          <div className="flex justify-end px-5 py-3">
+            {today && !studyDay.is_finished ? (
+              <Button size="sm" onClick={() => navigate(`/study/${studyDay.date}`)}>
+                공부하러 가기
+              </Button>
+            ) : (
+              <button
+                onClick={() => navigate(`/study/${studyDay.date}`)}
+                className="text-sm text-green-600 hover:underline"
+              >
+                기록 보기 →
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     );
   }
