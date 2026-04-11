@@ -48,7 +48,7 @@ export default function SessionCard({
   if (!isStudy) {
     return (
       <div
-        className={`${shapeClass} ${borderColor} ${bgColor} border p-4 w-24 h-24 sm:w-28 sm:h-28 mx-auto relative`}
+        className={`${shapeClass} ${borderColor} ${bgColor} border p-4 w-24 h-24 sm:w-28 sm:h-28 mx-auto relative shadow-soft`}
         data-testid={`session-card-${session.id}`}
       >
         {!isReview && onDelete && (
@@ -57,7 +57,7 @@ export default function SessionCard({
           </div>
         )}
         <div className="flex flex-col items-center gap-1 text-center">
-          <span className="text-xs font-medium text-blue-600">휴식</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-500">휴식</span>
           {isRunning && timerState ? (
             <TimerDisplay {...timerState} />
           ) : (
@@ -72,16 +72,16 @@ export default function SessionCard({
 
   return (
     <div
-      className={`${shapeClass} ${borderColor} ${bgColor} relative border p-4`}
+      className={`${shapeClass} relative border p-4 bg-white shadow-card transition-shadow hover:shadow-elevated ${isRunning ? 'ring-2 ring-green-400 ring-offset-1' : borderColor}`}
       data-testid={`session-card-${session.id}`}
     >
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-green-600">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-green-600">
             공부 #{studyIndex ?? session.order_num}
           </span>
           {!isRunning && (
-            <span className="text-sm text-gray-500">
+            <span className="text-xs font-medium text-gray-400">
               {session.duration_minutes}분
             </span>
           )}

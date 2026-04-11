@@ -18,27 +18,29 @@ export default function FocusLevelInput({
   disabled = false,
 }: FocusLevelInputProps) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs font-medium text-gray-500">집중도</span>
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">집중도</span>
+        {value !== null && (
+          <span className="text-[10px] font-semibold text-gray-400">{value}/5</span>
+        )}
+      </div>
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((level) => (
           <button
             key={level}
             onClick={() => !disabled && onChange(value === level ? 0 : level)}
             disabled={disabled}
-            className={`h-5 flex-1 rounded-sm transition-colors ${
+            className={`h-6 flex-1 rounded-md transition-all duration-150 ${
               value !== null && value > 0 && level <= value
                 ? FOCUS_COLORS[level - 1]
-                : 'bg-gray-200'
-            } ${disabled ? 'cursor-default' : 'hover:opacity-80'}`}
+                : 'bg-gray-100'
+            } ${disabled ? 'cursor-default' : 'hover:opacity-80 active:scale-95'}`}
             aria-label={`집중도 ${level}`}
             data-testid={`focus-level-${level}`}
           />
         ))}
       </div>
-      {value !== null && (
-        <span className="text-xs text-gray-500">{value}/5</span>
-      )}
     </div>
   );
 }

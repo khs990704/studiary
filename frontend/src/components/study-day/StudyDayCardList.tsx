@@ -35,14 +35,15 @@ export default function StudyDayCardList({
 
   if (studyDays.length === 0) {
     return (
-      <div className="py-8 text-center text-gray-400">
-        이 달에는 공부 기록이 없습니다.
+      <div className="flex flex-col items-center gap-2 py-16 text-center">
+        <div className="text-3xl opacity-30">&#128218;</div>
+        <p className="text-sm text-gray-400">이 달에는 공부 기록이 없습니다.</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {studyDays.map((sd) => (
         <StudyDayCard key={sd.date} studyDay={sd} ref={setCardRef(sd.date)} />
       ))}

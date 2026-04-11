@@ -251,14 +251,17 @@ export default function StudyPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="text-sm text-gray-500 hover:text-gray-700"
+          className="group flex items-center gap-1 text-sm font-medium text-gray-400 transition-colors hover:text-gray-600"
         >
-          &larr; 돌아가기
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+          돌아가기
         </button>
-        <h2 className="text-lg font-semibold text-gray-800">{date}</h2>
+        <h2 className="text-base font-bold text-gray-800">{date}</h2>
         <div className="w-16" />
       </div>
 
@@ -269,13 +272,19 @@ export default function StudyPage() {
       )}
 
       {studyDay && isReview && (
-        <div className="mb-4 rounded-xl border border-gray-200 bg-white p-4">
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>
-              공부 {studyDay.total_study_minutes}분 / 휴식{' '}
-              {studyDay.total_rest_minutes}분
+        <div className="mb-5 overflow-hidden rounded-2xl bg-white shadow-card">
+          <div className="flex items-center justify-between px-5 py-3.5">
+            <div className="flex items-center gap-2.5">
+              <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-600">
+                공부 {studyDay.total_study_minutes}분
+              </span>
+              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-500">
+                휴식 {studyDay.total_rest_minutes}분
+              </span>
+            </div>
+            <span className="text-xs font-semibold text-gray-500">
+              평균 집중도 <span className="text-green-600">{studyDay.avg_focus_ceil}/5</span>
             </span>
-            <span>평균 집중도: {studyDay.avg_focus_ceil}/5</span>
           </div>
         </div>
       )}
@@ -299,7 +308,7 @@ export default function StudyPage() {
       />
 
       {showFinishButton && (
-        <div className="mt-4 flex flex-col items-center gap-3">
+        <div className="mt-5 flex flex-col items-center gap-4">
           {!isFinished && (
             showTimerSetup ? (
               <TimerSetup
@@ -310,7 +319,7 @@ export default function StudyPage() {
               <button
                 onClick={() => setShowTimerSetup(true)}
                 disabled={activeSessionId !== null}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-2xl text-white shadow-md transition-colors hover:bg-green-700 disabled:opacity-50"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-2xl text-white shadow-lg shadow-green-600/30 transition-all duration-200 hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/40 active:scale-95 disabled:opacity-50 disabled:shadow-none"
                 aria-label="세션 추가"
                 data-testid="add-session-button"
               >
@@ -335,7 +344,7 @@ export default function StudyPage() {
       )}
 
       {isReview && (
-        <div className="mt-6 flex flex-col gap-4">
+        <div className="mt-6 flex flex-col gap-4 animate-slide-up">
           <FocusChart sessions={sessions} />
           <AISummary summary={studyDay?.ai_summary ?? null} />
           <AIFeedback feedback={studyDay?.ai_feedback ?? null} />

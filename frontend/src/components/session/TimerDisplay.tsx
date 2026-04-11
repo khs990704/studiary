@@ -17,13 +17,13 @@ export default function TimerDisplay({
 }: TimerDisplayProps) {
   return (
     <div className="flex items-center gap-3">
-      <span className="font-mono text-2xl font-bold text-gray-800">
+      <span className="font-mono text-2xl font-bold tabular-nums tracking-tight text-gray-800">
         {formatTime(remainingSeconds)}
       </span>
       {(isRunning || isPaused) && (
         <button
           onClick={isPaused ? onResume : onPause}
-          className="text-gray-400 transition-colors hover:text-gray-700"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-all hover:bg-gray-200 hover:text-gray-700 active:scale-90"
           aria-label={isPaused ? '재생' : '일시정지'}
         >
           {isPaused ? (

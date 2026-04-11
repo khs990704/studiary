@@ -20,19 +20,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm">
-        <h1 className="mb-8 text-center text-3xl font-bold text-green-700">
-          Studiary
-        </h1>
-        <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-gray-800">로그인</h2>
-          <p className="text-sm text-gray-500">
-            Google 계정으로 간편하게 시작하세요.
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-50 via-white to-emerald-50 px-4">
+      <div className="w-full max-w-sm animate-slide-up">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-green-700">
+            Studiary
+          </h1>
+          <p className="mt-2 text-sm text-gray-400">
+            나만의 공부 기록을 시작하세요
           </p>
+        </div>
+        <div className="flex flex-col gap-5 rounded-2xl bg-white p-7 shadow-card">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800">로그인</h2>
+            <p className="mt-1 text-sm text-gray-400">
+              Google 계정으로 간편하게 시작하세요.
+            </p>
+          </div>
           <button
             onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-sm font-medium text-gray-700 shadow-soft transition-all duration-200 hover:border-gray-300 hover:shadow-md active:scale-[0.98]"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
               <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>

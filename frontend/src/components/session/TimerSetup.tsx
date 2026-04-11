@@ -23,36 +23,36 @@ export default function TimerSetup({ onStart, onCancel }: TimerSetupProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-xl border border-gray-200 bg-white p-6">
-      <h3 className="text-lg font-semibold text-gray-800">타이머 설정</h3>
+    <div className="flex flex-col items-center gap-5 rounded-2xl bg-white p-6 shadow-card animate-scale-in">
+      <h3 className="text-sm font-bold text-gray-700">타이머 설정</h3>
       <div className="flex items-center gap-3">
         <button
           onClick={handleDecrement}
-          className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 text-xl hover:bg-gray-100"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-lg font-medium text-gray-500 transition-all hover:bg-gray-200 hover:text-gray-700 active:scale-90"
           aria-label="1분 줄이기"
         >
           -
         </button>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <input
             type="number"
             value={minutes}
             onChange={handleInputChange}
             min={1}
-            className="w-16 rounded-lg border border-gray-300 p-2 text-center text-lg focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+            className="w-16 rounded-xl border border-gray-200 bg-gray-50 p-2.5 text-center font-mono text-lg font-bold tabular-nums focus:border-green-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-green-500"
             aria-label="타이머 분"
           />
-          <span className="text-gray-600">분</span>
+          <span className="text-sm font-medium text-gray-400">분</span>
         </div>
         <button
           onClick={handleIncrement}
-          className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 text-xl hover:bg-gray-100"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-lg font-medium text-gray-500 transition-all hover:bg-gray-200 hover:text-gray-700 active:scale-90"
           aria-label="1분 늘리기"
         >
           +
         </button>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2.5">
         <Button variant="secondary" size="sm" onClick={onCancel}>
           취소
         </Button>

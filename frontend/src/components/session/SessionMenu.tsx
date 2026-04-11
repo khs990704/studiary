@@ -41,13 +41,13 @@ export default function SessionMenu({ onDelete }: SessionMenuProps) {
       </button>
 
       {showTooltip && (
-        <div className="absolute right-0 top-8 z-10 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+        <div className="absolute right-0 top-8 z-10 rounded-xl border border-gray-100 bg-white py-1 shadow-elevated animate-scale-in">
           <button
             onClick={() => {
               setShowTooltip(false);
               setShowConfirm(true);
             }}
-            className="whitespace-nowrap px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+            className="whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
           >
             세션 삭제
           </button>

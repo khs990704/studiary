@@ -13,12 +13,12 @@ export default function HeatmapCell({ day, focusLevel, onClick }: HeatmapCellPro
   return (
     <button
       onClick={onClick}
-      className="flex aspect-square w-full items-center justify-center rounded-sm text-xs transition-transform hover:scale-110 focus:outline-none focus:ring-1 focus:ring-green-400"
+      className="flex aspect-square w-full items-center justify-center rounded-md text-xs transition-all duration-150 hover:scale-105 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1"
       style={{ backgroundColor: color }}
       aria-label={`${day}일${focusLevel !== null ? `, 집중도 ${focusLevel}` : ', 기록 없음'}`}
       data-testid={`heatmap-cell-${day}`}
     >
-      <span className="text-[10px] text-white/80">{day}</span>
+      <span className="text-[10px] font-medium text-white/90 drop-shadow-sm">{day}</span>
     </button>
   );
 }

@@ -16,13 +16,13 @@ export default function Modal({ onClose, children }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-xl"
+        className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-elevated animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {children}

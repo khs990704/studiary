@@ -32,8 +32,9 @@ export default function SessionList({
 }: SessionListProps) {
   if (sessions.length === 0) {
     return (
-      <div className="py-6 text-center text-gray-400">
-        아직 세션이 없습니다.
+      <div className="flex flex-col items-center gap-2 py-12 text-center">
+        <div className="text-2xl opacity-30">&#9201;</div>
+        <p className="text-sm text-gray-400">아직 세션이 없습니다.</p>
       </div>
     );
   }
@@ -41,7 +42,7 @@ export default function SessionList({
   let studyIndex = 0;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3.5">
       {sessions.map((session) => {
         const local = localStates?.get(session.id);
         if (session.type === 'study') studyIndex += 1;

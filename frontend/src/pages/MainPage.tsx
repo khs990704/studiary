@@ -63,14 +63,14 @@ export default function MainPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
-      <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-base font-bold tracking-tight text-gray-800">
+      <div className="mb-6 overflow-hidden rounded-2xl bg-white shadow-card">
+        <div className="flex items-center justify-between px-5 py-4">
+          <h2 className="text-sm font-bold tracking-tight text-gray-800">
             Study <span className="text-green-600">Heatmap</span>
           </h2>
           <MonthSelector year={year} month={month} onChange={handleMonthChange} />
         </div>
-        <div className="mt-4">
+        <div className="px-5 pb-5">
           <HeatmapGrid
             year={year}
             month={month}
@@ -81,13 +81,13 @@ export default function MainPage() {
       </div>
 
       {!isCurrentMonth ? (
-        <div className="mb-4 flex justify-center">
+        <div className="mb-5 flex justify-center">
           <Button onClick={handleGoToToday}>
             오늘 날짜 돌아가기
           </Button>
         </div>
       ) : !hasTodayRecord && (
-        <div className="mb-4 flex justify-center">
+        <div className="mb-5 flex justify-center">
           <Button onClick={() => navigate(`/study/${todayStr}`)}>
             오늘 공부 시작하기
           </Button>

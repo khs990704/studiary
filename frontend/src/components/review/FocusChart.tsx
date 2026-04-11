@@ -18,8 +18,9 @@ export default function FocusChart({ sessions }: FocusChartProps) {
 
   if (studySessions.length === 0) {
     return (
-      <div className="py-4 text-center text-sm text-gray-400">
-        공부 세션이 없어 그래프를 표시할 수 없습니다.
+      <div className="flex flex-col items-center gap-2 py-8 text-center">
+        <div className="text-2xl opacity-30">&#128200;</div>
+        <p className="text-sm text-gray-400">공부 세션이 없어 그래프를 표시할 수 없습니다.</p>
       </div>
     );
   }
@@ -30,8 +31,8 @@ export default function FocusChart({ sessions }: FocusChartProps) {
   }));
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4">
-      <h3 className="mb-3 text-sm font-semibold text-gray-700">
+    <div className="overflow-hidden rounded-2xl bg-white p-5 shadow-card">
+      <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-400">
         집중도 변화
       </h3>
       <ResponsiveContainer width="100%" height={200}>

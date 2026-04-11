@@ -20,8 +20,8 @@ export default function DistractionInput({
   };
 
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs font-medium text-gray-500">방해요소</span>
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">방해요소</span>
       <textarea
         value={value}
         onChange={handleChange}
@@ -30,10 +30,10 @@ export default function DistractionInput({
         placeholder="방해요소를 입력하세요..."
         maxLength={MAX_DISTRACTION_LENGTH}
         rows={2}
-        className="resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-50"
+        className="resize-none rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm transition-colors focus:border-green-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-green-500 disabled:bg-gray-50"
         data-testid="distraction-input"
       />
-      <span className="text-right text-xs text-gray-400">
+      <span className="text-right text-[10px] text-gray-300">
         {value.length}/{MAX_DISTRACTION_LENGTH}
       </span>
     </div>
