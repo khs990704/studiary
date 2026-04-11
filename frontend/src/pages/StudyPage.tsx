@@ -151,7 +151,7 @@ export default function StudyPage() {
     if (!date) return;
     if (!window.confirm('오늘 공부를 끝내겠습니까?')) return;
     if (sessions.length === 0) {
-      setError('세션이 없습니다. 먼저 공부 세션을 추가해주세요.');
+      alert('세션이 없습니다. 먼저 공부 세션을 추가해주세요.');
       return;
     }
 
@@ -223,26 +223,14 @@ export default function StudyPage() {
 
     try {
       const data = await studyDaysApi.finishStudyDay(date);
-      let aiSummary = data.ai_summary;
-      let aiFeedback = data.ai_feedback;
-      if (!aiSummary || !aiFeedback) {
-        try {
-          const aiResult = await studyDaysApi.regenerateAI(date);
-          aiSummary = aiResult.ai_summary;
-          aiFeedback = aiResult.ai_feedback;
-        } catch {
-          // AI 생성 실패 - has_ai_result false로 설정되어 버튼이 다시 표시됨
-        }
-      }
-
       setStudyDay((prev) =>
         prev
           ? {
               ...prev,
               is_finished: true,
-              ai_summary: aiSummary,
-              ai_feedback: aiFeedback,
-              has_ai_result: !!aiSummary && !!aiFeedback,
+              ai_summary: data.ai_summary,
+              ai_feedback: data.ai_feedback,
+              has_ai_result: !!data.ai_summary && !!data.ai_feedback,
               total_study_minutes: data.total_study_minutes,
               total_rest_minutes: data.total_rest_minutes,
               avg_focus_ceil: data.avg_focus_ceil,
@@ -251,14 +239,9 @@ export default function StudyPage() {
       );
       timer.resetTimer();
       setActiveSessionId(null);
-      if (!aiSummary || !aiFeedback) {
-        alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
-      }
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { detail?: string } } };
-      setError(
-        axiosErr.response?.data?.detail || '공부 종료에 실패했습니다.'
-      );
+      alert(axiosErr.response?.data?.detail || '공부 종료에 실패했습니다.');
     } finally {
       setFinishing(false);
     }

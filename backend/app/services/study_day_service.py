@@ -142,22 +142,26 @@ async def finish_study_day(
             detail="이미 종료된 학습일입니다",
         )
 
-    study_day.is_finished = True
-    await db.flush()
-
-    # AI generation (failure is OK)
+    # AI 생성 먼저 시도 - 실패 시 is_finished를 변경하지 않음
     ai_summary = None
     ai_feedback = None
+    ai_result = None
     try:
         ai_result = await generate_ai_result(study_day.id, list(study_day.sessions))
         if ai_result is not None:
-            db.add(ai_result)
-            await db.flush()
             ai_summary = ai_result.summary
             ai_feedback = ai_result.feedback
     except Exception:
         pass
 
+    if not ai_summary or not ai_feedback:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="AI 생성에 실패했습니다. 다시 시도해주세요.",
+        )
+
+    study_day.is_finished = True
+    db.add(ai_result)
     await db.commit()
 
     stats = calculate_stats(list(study_day.sessions))
