@@ -14,6 +14,7 @@ interface SessionListProps {
   };
   onFocusChange?: (sessionId: string, level: number) => void;
   onDistractionChange?: (sessionId: string, text: string) => void;
+  onDistractionBlur?: (sessionId: string) => void;
   onDelete?: (sessionId: string) => void;
   localStates?: Map<string, { focusLevel: number | null; distraction: string }>;
 }
@@ -25,6 +26,7 @@ export default function SessionList({
   timerState,
   onFocusChange,
   onDistractionChange,
+  onDistractionBlur,
   onDelete,
   localStates,
 }: SessionListProps) {
@@ -36,14 +38,19 @@ export default function SessionList({
     );
   }
 
+  let studyIndex = 0;
+
   return (
     <div className="flex flex-col gap-3">
       {sessions.map((session) => {
         const local = localStates?.get(session.id);
+        if (session.type === 'study') studyIndex += 1;
+        const sessionStudyIndex = session.type === 'study' ? studyIndex : undefined;
         return (
           <SessionCard
             key={session.id}
             session={session}
+            studyIndex={sessionStudyIndex}
             isReview={isReview}
             timerState={
               session.id === activeSessionId ? timerState : undefined
@@ -56,6 +63,11 @@ export default function SessionList({
             onDistractionChange={
               onDistractionChange
                 ? (text) => onDistractionChange(session.id, text)
+                : undefined
+            }
+            onDistractionBlur={
+              onDistractionBlur
+                ? () => onDistractionBlur(session.id)
                 : undefined
             }
             onDelete={

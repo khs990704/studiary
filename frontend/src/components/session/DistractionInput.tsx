@@ -3,12 +3,14 @@ import { MAX_DISTRACTION_LENGTH } from '../../utils/constants';
 interface DistractionInputProps {
   value: string;
   onChange: (text: string) => void;
+  onBlur?: () => void;
   disabled?: boolean;
 }
 
 export default function DistractionInput({
   value,
   onChange,
+  onBlur,
   disabled = false,
 }: DistractionInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -23,6 +25,7 @@ export default function DistractionInput({
       <textarea
         value={value}
         onChange={handleChange}
+        onBlur={onBlur}
         disabled={disabled}
         placeholder="방해요소를 입력하세요..."
         maxLength={MAX_DISTRACTION_LENGTH}

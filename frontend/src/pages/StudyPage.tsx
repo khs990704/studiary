@@ -10,7 +10,6 @@ import TimerSetup from '../components/session/TimerSetup';
 import FocusChart from '../components/review/FocusChart';
 import AISummary from '../components/review/AISummary';
 import AIFeedback from '../components/review/AIFeedback';
-import RegenerateButton from '../components/review/RegenerateButton';
 import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
@@ -72,8 +71,10 @@ export default function StudyPage() {
     loadStudyDay();
   }, [loadStudyDay]);
 
-  const isReview =
-    studyDay?.is_finished || !today;
+  const isFinished = studyDay?.is_finished ?? false;
+  const hasAiResult = studyDay?.has_ai_result ?? false;
+  const isReview = !today || (isFinished && hasAiResult);
+  const showFinishButton = today && (!isFinished || !hasAiResult);
 
   const handleStartSession = async (minutes: number) => {
     if (!date) return;
@@ -148,30 +149,100 @@ export default function StudyPage() {
 
   const handleFinish = async () => {
     if (!date) return;
+    if (!window.confirm('오늘 공부를 끝내겠습니까?')) return;
     if (sessions.length === 0) {
       setError('세션이 없습니다. 먼저 공부 세션을 추가해주세요.');
       return;
     }
-    // localStates에 있는 미저장 값들을 store에 반영
-    localStates.forEach((local, sessionId) => {
-      updateSession(sessionId, {
-        focus_level: local.focusLevel,
-        distraction: local.distraction || null,
-      });
-    });
+
+    if (!isFinished) {
+      const missingFocusSession = sessions
+        .filter((s) => s.type === 'study')
+        .find((s) => {
+          const local = localStates.get(s.id);
+          const effectiveFocus = local ? local.focusLevel : s.focus_level;
+          return !effectiveFocus;
+        });
+
+      if (missingFocusSession) {
+        alert('집중도는 필수 입력 요소입니다');
+        const el = document.querySelector(
+          `[data-testid="session-card-${missingFocusSession.id}"]`
+        );
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+    }
+
     setFinishing(true);
     setError('');
+
+    // 이미 종료된 경우 AI 재생성만 시도
+    if (isFinished) {
+      try {
+        const aiResult = await studyDaysApi.regenerateAI(date);
+        setStudyDay((prev) =>
+          prev
+            ? {
+                ...prev,
+                ai_summary: aiResult.ai_summary,
+                ai_feedback: aiResult.ai_feedback,
+                has_ai_result: !!aiResult.ai_summary && !!aiResult.ai_feedback,
+              }
+            : prev
+        );
+        if (!aiResult.ai_summary || !aiResult.ai_feedback) {
+          alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
+        }
+      } catch (err: unknown) {
+        const axiosErr = err as { response?: { data?: { detail?: string } } };
+        alert(axiosErr.response?.data?.detail || 'AI 생성에 실패했습니다. 다시 시도해주세요.');
+      } finally {
+        setFinishing(false);
+      }
+      return;
+    }
+
+    // localStates에 있는 미저장 값들을 store 및 서버에 반영
+    const savePromises: Promise<unknown>[] = [];
+    localStates.forEach((local, sessionId) => {
+      const patch: { focus_level?: number | null; distraction?: string | null } = {
+        distraction: local.distraction || null,
+      };
+      if (local.focusLevel !== null) {
+        patch.focus_level = local.focusLevel;
+      }
+      updateSession(sessionId, patch);
+      savePromises.push(
+        sessionsApi.updateSession(sessionId, patch).catch(() => {})
+      );
+    });
+    await Promise.all(savePromises);
+
     try {
       const data = await studyDaysApi.finishStudyDay(date);
-      const bothGenerated = !!data.ai_summary && !!data.ai_feedback;
+      let aiSummary = data.ai_summary;
+      let aiFeedback = data.ai_feedback;
+      if (!aiSummary || !aiFeedback) {
+        try {
+          const aiResult = await studyDaysApi.regenerateAI(date);
+          aiSummary = aiResult.ai_summary;
+          aiFeedback = aiResult.ai_feedback;
+        } catch {
+          // AI 생성 실패 - has_ai_result false로 설정되어 버튼이 다시 표시됨
+        }
+      }
+
       setStudyDay((prev) =>
         prev
           ? {
               ...prev,
               is_finished: true,
-              ai_summary: data.ai_summary,
-              ai_feedback: data.ai_feedback,
-              has_ai_result: bothGenerated && data.has_ai_result,
+              ai_summary: aiSummary,
+              ai_feedback: aiFeedback,
+              has_ai_result: !!aiSummary && !!aiFeedback,
               total_study_minutes: data.total_study_minutes,
               total_rest_minutes: data.total_rest_minutes,
               avg_focus_ceil: data.avg_focus_ceil,
@@ -180,6 +251,9 @@ export default function StudyPage() {
       );
       timer.resetTimer();
       setActiveSessionId(null);
+      if (!aiSummary || !aiFeedback) {
+        alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
+      }
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { detail?: string } } };
       setError(
@@ -187,29 +261,6 @@ export default function StudyPage() {
       );
     } finally {
       setFinishing(false);
-    }
-  };
-
-  const handleRegenerate = async () => {
-    if (!date) return;
-    try {
-      const result = await studyDaysApi.regenerateAI(date);
-      const bothGenerated = !!result.ai_summary && !!result.ai_feedback;
-      setStudyDay((prev) =>
-        prev
-          ? {
-              ...prev,
-              ai_summary: result.ai_summary,
-              ai_feedback: result.ai_feedback,
-              has_ai_result: bothGenerated && result.has_ai_result,
-            }
-          : prev
-      );
-    } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { detail?: string } } };
-      setError(
-        axiosErr.response?.data?.detail || 'AI 재생성에 실패했습니다.'
-      );
     }
   };
 
@@ -259,39 +310,30 @@ export default function StudyPage() {
         }}
         onFocusChange={!isReview ? handleFocusChange : undefined}
         onDistractionChange={!isReview ? handleDistractionChange : undefined}
+        onDistractionBlur={!isReview ? handleDistractionBlur : undefined}
         onDelete={!isReview ? handleDeleteSession : undefined}
         localStates={localStates}
       />
 
-      {/* Blur handler for distraction save */}
-      {!isReview &&
-        sessions
-          .filter((s) => s.type === 'study' && s.status === 'running')
-          .map((s) => (
-            <input
-              key={`blur-${s.id}`}
-              type="hidden"
-              onBlur={() => handleDistractionBlur(s.id)}
-            />
-          ))}
-
-      {!isReview && (
+      {showFinishButton && (
         <div className="mt-4 flex flex-col items-center gap-3">
-          {showTimerSetup ? (
-            <TimerSetup
-              onStart={handleStartSession}
-              onCancel={() => setShowTimerSetup(false)}
-            />
-          ) : (
-            <button
-              onClick={() => setShowTimerSetup(true)}
-              disabled={activeSessionId !== null}
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-2xl text-white shadow-md transition-colors hover:bg-green-700 disabled:opacity-50"
-              aria-label="세션 추가"
-              data-testid="add-session-button"
-            >
-              +
-            </button>
+          {!isFinished && (
+            showTimerSetup ? (
+              <TimerSetup
+                onStart={handleStartSession}
+                onCancel={() => setShowTimerSetup(false)}
+              />
+            ) : (
+              <button
+                onClick={() => setShowTimerSetup(true)}
+                disabled={activeSessionId !== null}
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-2xl text-white shadow-md transition-colors hover:bg-green-700 disabled:opacity-50"
+                aria-label="세션 추가"
+                data-testid="add-session-button"
+              >
+                +
+              </button>
+            )
           )}
 
           <Button
@@ -300,7 +342,7 @@ export default function StudyPage() {
             disabled={finishing}
             data-testid="finish-button"
           >
-            {finishing ? '종료 중...' : '오늘 공부 끝내기'}
+            {finishing ? (isFinished ? 'AI 생성 중...' : '종료 중...') : '오늘 공부 끝내기'}
           </Button>
         </div>
       )}
@@ -310,14 +352,6 @@ export default function StudyPage() {
           <FocusChart sessions={sessions} />
           <AISummary summary={studyDay?.ai_summary ?? null} />
           <AIFeedback feedback={studyDay?.ai_feedback ?? null} />
-          {studyDay && !studyDay.has_ai_result && (
-            <div className="flex justify-center">
-              <RegenerateButton
-                hasAiResult={studyDay.has_ai_result}
-                onRegenerate={handleRegenerate}
-              />
-            </div>
-          )}
         </div>
       )}
     </div>

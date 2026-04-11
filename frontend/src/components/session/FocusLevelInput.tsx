@@ -24,10 +24,10 @@ export default function FocusLevelInput({
         {[1, 2, 3, 4, 5].map((level) => (
           <button
             key={level}
-            onClick={() => !disabled && onChange(level)}
+            onClick={() => !disabled && onChange(value === level ? 0 : level)}
             disabled={disabled}
             className={`h-5 flex-1 rounded-sm transition-colors ${
-              value !== null && level <= value
+              value !== null && value > 0 && level <= value
                 ? FOCUS_COLORS[level - 1]
                 : 'bg-gray-200'
             } ${disabled ? 'cursor-default' : 'hover:opacity-80'}`}

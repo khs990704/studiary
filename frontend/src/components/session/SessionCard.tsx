@@ -6,6 +6,7 @@ import SessionMenu from './SessionMenu';
 
 interface SessionCardProps {
   session: Session;
+  studyIndex?: number;
   isReview: boolean;
   timerState?: {
     remainingSeconds: number;
@@ -16,6 +17,7 @@ interface SessionCardProps {
   };
   onFocusChange?: (level: number) => void;
   onDistractionChange?: (text: string) => void;
+  onDistractionBlur?: () => void;
   onDelete?: () => void;
   localFocusLevel?: number | null;
   localDistraction?: string;
@@ -23,10 +25,12 @@ interface SessionCardProps {
 
 export default function SessionCard({
   session,
+  studyIndex,
   isReview,
   timerState,
   onFocusChange,
   onDistractionChange,
+  onDistractionBlur,
   onDelete,
   localFocusLevel,
   localDistraction,
@@ -74,7 +78,7 @@ export default function SessionCard({
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-green-600">
-            공부 #{session.order_num}
+            공부 #{studyIndex ?? session.order_num}
           </span>
           {!isRunning && (
             <span className="text-sm text-gray-500">
@@ -108,6 +112,7 @@ export default function SessionCard({
                   : (localDistraction ?? session.distraction ?? '')
               }
               onChange={(text) => onDistractionChange?.(text)}
+              onBlur={onDistractionBlur}
               disabled={isReview}
             />
           )}
