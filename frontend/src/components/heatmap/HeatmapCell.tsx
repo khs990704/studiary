@@ -1,5 +1,5 @@
 import { getFocusColor } from '../../utils/focus';
-import { HEATMAP_COLORS } from '../../utils/constants';
+import { HEATMAP_NO_RECORD_COLOR } from '../../utils/constants';
 
 interface HeatmapCellProps {
   day: number;
@@ -8,7 +8,7 @@ interface HeatmapCellProps {
 }
 
 export default function HeatmapCell({ day, focusLevel, onClick }: HeatmapCellProps) {
-  const color = focusLevel !== null ? getFocusColor(focusLevel) : HEATMAP_COLORS[0];
+  const color = focusLevel !== null ? getFocusColor(focusLevel) : HEATMAP_NO_RECORD_COLOR;
 
   return (
     <button

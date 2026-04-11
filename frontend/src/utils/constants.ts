@@ -1,5 +1,7 @@
+export const HEATMAP_NO_RECORD_COLOR = '#d2b48c'; // 기록 없음
+
 export const HEATMAP_COLORS: Record<number, string> = {
-  0: '#d2b48c', // 기록 없음
+  0: '#a0785a', // 집중도 0
   1: '#c6e48b',
   2: '#7bc96f',
   3: '#449945',
