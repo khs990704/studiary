@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     OPENROUTER_API_KEY: str = ""
     OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
     CORS_ORIGINS: str = "*"
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://localhost/api/v1/auth/google/callback"
+    FRONTEND_URL: str = "http://localhost"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

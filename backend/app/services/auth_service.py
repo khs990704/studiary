@@ -41,3 +41,16 @@ async def get_user_by_id(db: AsyncSession, user_id: uuid.UUID) -> User | None:
 async def check_email_exists(db: AsyncSession, email: str) -> bool:
     result = await db.execute(select(User.id).where(User.email == email))
     return result.scalar_one_or_none() is not None
+
+
+async def get_or_create_google_user(
+    db: AsyncSession, email: str, nickname: str
+) -> User:
+    result = await db.execute(select(User).where(User.email == email))
+    user = result.scalar_one_or_none()
+    if user is None:
+        user = User(email=email, password_hash=None, nickname=nickname)
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+    return user
