@@ -1,18 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import HeatmapGrid from '../components/heatmap/HeatmapGrid';
 import MonthSelector from '../components/heatmap/MonthSelector';
 import StudyDayCardList from '../components/study-day/StudyDayCardList';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { useStudyDayStore } from '../stores/studyDayStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { formatDate, isToday as checkIsToday } from '../utils/date';
 import Button from '../components/common/Button';
 
 export default function MainPage() {
   const now = new Date();
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [scrollToDate, setScrollToDate] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [scrollTrigger, setScrollTrigger] = useState<{ date: string; seq: number } | null>(null);
+
+  const year = parseInt(searchParams.get('year') ?? String(now.getFullYear()), 10);
+  const month = parseInt(searchParams.get('month') ?? String(now.getMonth() + 1), 10);
 
   const {
     studyDays,
@@ -35,21 +37,25 @@ export default function MainPage() {
   }, [loadData]);
 
   const handleMonthChange = (y: number, m: number) => {
-    setYear(y);
-    setMonth(m);
-    setScrollToDate(null);
+    setSearchParams({ year: String(y), month: String(m) });
+    setScrollTrigger(null);
   };
 
   const handleDayClick = (date: string) => {
     const found = studyDays.find((sd) => sd.date === date);
     if (found) {
-      setScrollToDate(date);
+      setScrollTrigger((prev) => ({ date, seq: (prev?.seq ?? 0) + 1 }));
     } else if (checkIsToday(date)) {
       navigate(`/study/${date}`);
     }
   };
 
   const hasTodayRecord = studyDays.some((sd) => sd.date === todayStr);
+  const isCurrentMonth = year === now.getFullYear() && month === now.getMonth() + 1;
+
+  const handleGoToToday = () => {
+    setSearchParams({ year: String(now.getFullYear()), month: String(now.getMonth() + 1) });
+  };
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
@@ -65,7 +71,13 @@ export default function MainPage() {
         </div>
       </div>
 
-      {!hasTodayRecord && (
+      {!isCurrentMonth ? (
+        <div className="mb-4 flex justify-center">
+          <Button onClick={handleGoToToday}>
+            오늘 날짜 돌아가기
+          </Button>
+        </div>
+      ) : !hasTodayRecord && (
         <div className="mb-4 flex justify-center">
           <Button onClick={() => navigate(`/study/${todayStr}`)}>
             오늘 공부 시작하기
@@ -76,7 +88,7 @@ export default function MainPage() {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <StudyDayCardList studyDays={studyDays} scrollToDate={scrollToDate} />
+        <StudyDayCardList studyDays={studyDays} scrollTrigger={scrollTrigger} />
       )}
     </div>
   );

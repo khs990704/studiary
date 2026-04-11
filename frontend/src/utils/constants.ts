@@ -4,7 +4,7 @@ export const HEATMAP_COLORS: Record<number, string> = {
   2: '#7bc96f',
   3: '#449945',
   4: '#2d6a30',
-  5: '#196127',
+  5: '#0a3d1f',
 };
 
 export const DEFAULT_TIMER_MINUTES = 50;

@@ -4,12 +4,12 @@ import type { StudyDay } from '../../types/studyDay';
 
 interface StudyDayCardListProps {
   studyDays: StudyDay[];
-  scrollToDate: string | null;
+  scrollTrigger: { date: string; seq: number } | null;
 }
 
 export default function StudyDayCardList({
   studyDays,
-  scrollToDate,
+  scrollTrigger,
 }: StudyDayCardListProps) {
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
@@ -25,13 +25,13 @@ export default function StudyDayCardList({
   );
 
   useEffect(() => {
-    if (scrollToDate) {
-      const el = cardRefs.current.get(scrollToDate);
+    if (scrollTrigger) {
+      const el = cardRefs.current.get(scrollTrigger.date);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
-  }, [scrollToDate]);
+  }, [scrollTrigger]);
 
   if (studyDays.length === 0) {
     return (
