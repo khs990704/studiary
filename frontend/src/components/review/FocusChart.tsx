@@ -24,8 +24,8 @@ export default function FocusChart({ sessions }: FocusChartProps) {
     );
   }
 
-  const data = studySessions.map((s) => ({
-    name: `#${s.order_num}`,
+  const data = studySessions.map((s, i) => ({
+    name: `#${i + 1}`,
     집중도: s.focus_level ?? 0,
   }));
 

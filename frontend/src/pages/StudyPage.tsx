@@ -152,10 +152,18 @@ export default function StudyPage() {
       setError('세션이 없습니다. 먼저 공부 세션을 추가해주세요.');
       return;
     }
+    // localStates에 있는 미저장 값들을 store에 반영
+    localStates.forEach((local, sessionId) => {
+      updateSession(sessionId, {
+        focus_level: local.focusLevel,
+        distraction: local.distraction || null,
+      });
+    });
     setFinishing(true);
     setError('');
     try {
       const data = await studyDaysApi.finishStudyDay(date);
+      const bothGenerated = !!data.ai_summary && !!data.ai_feedback;
       setStudyDay((prev) =>
         prev
           ? {
@@ -163,7 +171,7 @@ export default function StudyPage() {
               is_finished: true,
               ai_summary: data.ai_summary,
               ai_feedback: data.ai_feedback,
-              has_ai_result: data.has_ai_result,
+              has_ai_result: bothGenerated && data.has_ai_result,
               total_study_minutes: data.total_study_minutes,
               total_rest_minutes: data.total_rest_minutes,
               avg_focus_ceil: data.avg_focus_ceil,
@@ -186,13 +194,14 @@ export default function StudyPage() {
     if (!date) return;
     try {
       const result = await studyDaysApi.regenerateAI(date);
+      const bothGenerated = !!result.ai_summary && !!result.ai_feedback;
       setStudyDay((prev) =>
         prev
           ? {
               ...prev,
               ai_summary: result.ai_summary,
               ai_feedback: result.ai_feedback,
-              has_ai_result: result.has_ai_result,
+              has_ai_result: bothGenerated && result.has_ai_result,
             }
           : prev
       );

@@ -44,9 +44,14 @@ export default function SessionCard({
   if (!isStudy) {
     return (
       <div
-        className={`${shapeClass} ${borderColor} ${bgColor} border p-4 w-24 h-24 sm:w-28 sm:h-28 mx-auto`}
+        className={`${shapeClass} ${borderColor} ${bgColor} border p-4 w-24 h-24 sm:w-28 sm:h-28 mx-auto relative`}
         data-testid={`session-card-${session.id}`}
       >
+        {!isReview && onDelete && (
+          <div className="absolute top-1 right-1">
+            <SessionMenu onDelete={onDelete} />
+          </div>
+        )}
         <div className="flex flex-col items-center gap-1 text-center">
           <span className="text-xs font-medium text-blue-600">휴식</span>
           {isRunning && timerState ? (
@@ -95,7 +100,7 @@ export default function SessionCard({
             onChange={(level) => onFocusChange?.(level)}
             disabled={isReview}
           />
-          {(isRunning || session.distraction || isReview) && (
+          {(isRunning || session.status === 'completed' || session.distraction || isReview) && (
             <DistractionInput
               value={
                 isReview
