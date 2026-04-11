@@ -77,18 +77,26 @@ docker compose up -d --build
 # http://localhost (Nginx를 통해 프론트엔드/백엔드 통합)
 ```
 
-### 로컬 개발 (Docker 없이)
+### 로컬 개발 (앱은 로컬, DB만 Docker)
+
+로컬 백엔드는 PostgreSQL이 필요합니다. DB만 Docker로 띄워서 쓰는 경우
+`DATABASE_URL`의 호스트/포트는 컨테이너 내부 주소(`db:5432`)가 아니라
+호스트에서 접근 가능한 `localhost:5433`을 사용하세요.
 
 ```bash
+# DB만 Docker로 기동
+docker compose up -d db
+
 # 백엔드
 cd backend
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+export DATABASE_URL=postgresql+asyncpg://studiary:studiary@localhost:5433/studiary
 alembic upgrade head
 uvicorn app.main:app --reload --port 8200
 
 # 프론트엔드
-cd frontend
+cd ../frontend
 npm install
 npm run dev   # http://localhost:5173 (Vite proxy → localhost:8200)
 ```
