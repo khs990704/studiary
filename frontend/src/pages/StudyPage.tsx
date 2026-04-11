@@ -161,7 +161,7 @@ export default function StudyPage() {
         .find((s) => {
           const local = localStates.get(s.id);
           const effectiveFocus = local ? local.focusLevel : s.focus_level;
-          return !effectiveFocus;
+          return effectiveFocus === null || effectiveFocus === undefined;
         });
 
       if (missingFocusSession) {
@@ -339,10 +339,14 @@ export default function StudyPage() {
           <Button
             variant="secondary"
             onClick={handleFinish}
-            disabled={finishing}
+            disabled={finishing || activeSessionId !== null}
             data-testid="finish-button"
           >
-            {finishing ? (isFinished ? 'AI 생성 중...' : '종료 중...') : '오늘 공부 끝내기'}
+            {activeSessionId !== null
+              ? '세션이 진행중입니다'
+              : finishing
+                ? (isFinished ? 'AI 생성 중...' : '종료 중...')
+                : '오늘 공부 끝내기'}
           </Button>
         </div>
       )}
