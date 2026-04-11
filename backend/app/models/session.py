@@ -15,7 +15,7 @@ class Session(Base):
         CheckConstraint("type IN ('study', 'rest')", name="ck_sessions_type"),
         CheckConstraint("duration_minutes > 0", name="ck_sessions_duration_positive"),
         CheckConstraint(
-            "focus_level IS NULL OR (focus_level >= 1 AND focus_level <= 5)",
+            "focus_level IS NULL OR (focus_level >= 0 AND focus_level <= 5)",
             name="ck_sessions_focus_range",
         ),
         CheckConstraint(

@@ -8,6 +8,7 @@ from sqlalchemy.orm import selectinload
 
 from app.models.session import Session
 from app.models.study_day import StudyDay
+from app.schemas.session import UpdateSessionRequest
 
 
 async def create_session(
@@ -76,8 +77,7 @@ async def update_session(
     db: AsyncSession,
     user_id: uuid.UUID,
     session_id: uuid.UUID,
-    focus_level: int | None = None,
-    distraction: str | None = None,
+    body: "UpdateSessionRequest",
 ) -> Session:
     result = await db.execute(
         select(Session)
@@ -113,17 +113,20 @@ async def update_session(
             detail="이미 종료된 학습일입니다",
         )
 
+    focus_level_provided = "focus_level" in body.model_fields_set
+    distraction_provided = "distraction" in body.model_fields_set
+
     # rest session cannot have focus_level or distraction
-    if session.type == "rest" and (focus_level is not None or distraction is not None):
+    if session.type == "rest" and (focus_level_provided or distraction_provided):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="휴식 세션에는 집중도/방해요소를 설정할 수 없습니다",
         )
 
-    if focus_level is not None:
-        session.focus_level = focus_level
-    if distraction is not None:
-        session.distraction = distraction
+    if focus_level_provided:
+        session.focus_level = body.focus_level
+    if distraction_provided:
+        session.distraction = body.distraction
 
     await db.commit()
     await db.refresh(session)

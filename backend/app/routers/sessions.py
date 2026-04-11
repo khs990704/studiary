@@ -39,8 +39,7 @@ async def update_session(
         db,
         current_user.id,
         session_id,
-        focus_level=body.focus_level,
-        distraction=body.distraction,
+        body=body,
     )
     return APIResponse(data=SessionResponse.model_validate(session))
 

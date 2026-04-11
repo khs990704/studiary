@@ -23,8 +23,8 @@ class UpdateSessionRequest(BaseModel):
     @field_validator("focus_level")
     @classmethod
     def focus_range(cls, v: int | None) -> int | None:
-        if v is not None and (v < 1 or v > 5):
-            raise ValueError("focus_level은 1~5 사이여야 합니다")
+        if v is not None and (v < 0 or v > 5):
+            raise ValueError("focus_level은 0~5 사이여야 합니다")
         return v
 
     @field_validator("distraction")
