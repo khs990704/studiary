@@ -43,15 +43,10 @@ def _calculate_stats(sessions: list[SessionModel]) -> dict:
 def _build_summary_prompt(stats: dict) -> list[dict[str, str]]:
     return [
         {
-            "role": "system",
-            "content": (
-                "당신은 학습 세션 분석 전문가입니다. "
-                "주어진 데이터를 바탕으로 오늘 학습에 대해 한국어로 1~2문장으로 간결하게 요약해주세요."
-            ),
-        },
-        {
             "role": "user",
             "content": (
+                f"당신은 학습 세션 분석 전문가입니다. "
+                f"주어진 데이터를 바탕으로 오늘 학습에 대해 한국어로 1~2문장으로 간결하게 요약해주세요.\n\n"
                 f"오늘 학습 데이터:\n"
                 f"- 총 공부 시간: {stats['total_study_minutes']}분\n"
                 f"- 총 휴식 시간: {stats['total_rest_minutes']}분\n"
@@ -67,15 +62,10 @@ def _build_summary_prompt(stats: dict) -> list[dict[str, str]]:
 def _build_feedback_prompt(summary: str) -> list[dict[str, str]]:
     return [
         {
-            "role": "system",
-            "content": (
-                "당신은 학습 코치입니다. "
-                "주어진 학습 요약을 바탕으로 다음 학습을 위한 구체적인 개선점이나 제안을 한국어로 1~2문장으로 피드백해주세요."
-            ),
-        },
-        {
             "role": "user",
             "content": (
+                f"당신은 학습 코치입니다. "
+                f"주어진 학습 요약을 바탕으로 다음 학습을 위한 구체적인 개선점이나 제안을 한국어로 1~2문장으로 피드백해주세요.\n\n"
                 f"오늘 학습 요약: {summary}\n\n"
                 f"위 요약을 바탕으로 다음 학습을 위한 개선점이나 제안을 1~2문장으로 피드백해주세요."
             ),
