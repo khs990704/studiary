@@ -1,10 +1,20 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
 import StudyPage from './pages/StudyPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import Header from './components/layout/Header';
 import { useAuth } from './hooks/useAuth';
+
+function StudyPageWithHeader() {
+  const { date } = useParams<{ date: string }>();
+  return (
+    <>
+      <Header studyDate={date} />
+      <StudyPage />
+    </>
+  );
+}
 
 export default function App() {
   useAuth();
@@ -24,12 +34,7 @@ export default function App() {
         />
         <Route
           path="/study/:date"
-          element={
-            <>
-              <Header />
-              <StudyPage />
-            </>
-          }
+          element={<StudyPageWithHeader />}
         />
       </Route>
     </Routes>

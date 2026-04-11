@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import * as studyDaysApi from '../api/studyDays';
 import * as sessionsApi from '../api/sessions';
 import { useSessionStore } from '../stores/sessionStore';
@@ -15,9 +15,23 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import type { StudyDayDetail } from '../types/studyDay';
 
+function formatStudyTime(totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+}
+
+function getGrade(avgFocus: number | null): string {
+  if (avgFocus === null || avgFocus === 0) return '-';
+  if (avgFocus >= 4.5) return 'S';
+  if (avgFocus >= 3.5) return 'A';
+  if (avgFocus >= 2.5) return 'B';
+  if (avgFocus >= 1.5) return 'C';
+  return 'D';
+}
+
 export default function StudyPage() {
   const { date } = useParams<{ date: string }>();
-  const navigate = useNavigate();
 
   const { sessions, setSessions, addSession, updateSession, removeSession } =
     useSessionStore();
@@ -248,54 +262,10 @@ export default function StudyPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="mx-auto max-w-2xl px-6 pt-24 pb-16 space-y-6">
-      {/* Top navigation */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-sm font-medium text-[#becaba] opacity-60 hover:opacity-100 transition-opacity"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
-          돌아가기
-        </button>
-        <div className="flex flex-col items-end">
-          <span className="font-headline text-base font-bold text-[#e5e2e1]">{date}</span>
-          {today && (
-            <span className="text-[11px] font-medium text-[#7bdb85]">오늘</span>
-          )}
-        </div>
-      </div>
-
+    <main className="pt-20 md:pt-24 pb-20 px-4 md:px-8 max-w-3xl mx-auto w-full space-y-10 md:space-y-12">
       {error && <ErrorMessage message={error} />}
 
-      {/* Stats bar */}
-      {studyDay && isReview && (
-        <div className="flex items-center gap-4 bg-[#1c1b1b] rounded-xl px-5 py-4">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] font-medium uppercase tracking-wide text-[#becaba]/60">공부</span>
-            <span className="font-headline text-xl font-bold tabular-nums text-[#e5e2e1]">
-              {studyDay.total_study_minutes}<span className="ml-0.5 text-xs font-normal text-[#becaba]">분</span>
-            </span>
-          </div>
-          <div className="h-8 w-px bg-[#3f4a3e]" />
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] font-medium uppercase tracking-wide text-[#becaba]/60">휴식</span>
-            <span className="font-headline text-xl font-bold tabular-nums text-[#becaba]">
-              {studyDay.total_rest_minutes}<span className="ml-0.5 text-xs font-normal text-[#becaba]/60">분</span>
-            </span>
-          </div>
-          <div className="h-8 w-px bg-[#3f4a3e]" />
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[10px] font-medium uppercase tracking-wide text-[#becaba]/60">집중도</span>
-            <span className="font-headline text-xl font-bold tabular-nums text-[#7bdb85]">
-              {studyDay.avg_focus_ceil}<span className="ml-0.5 text-xs font-normal text-[#becaba]/60">/5</span>
-            </span>
-          </div>
-        </div>
-      )}
-
+      {/* Session List */}
       <SessionList
         sessions={sessions}
         isReview={!!isReview}
@@ -355,12 +325,33 @@ export default function StudyPage() {
       )}
 
       {isReview && (
-        <div className="flex flex-col gap-4 animate-slide-up">
+        <div className="flex flex-col gap-10 md:gap-12">
           <FocusChart sessions={sessions} />
           <AISummary summary={studyDay?.ai_summary ?? null} />
           <AIFeedback feedback={studyDay?.ai_feedback ?? null} />
+
+          {/* Performance Stats */}
+          {studyDay && (
+            <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-[#1c1b1b] rounded-2xl p-6 text-center border border-white/5 flex flex-col justify-center items-center">
+                <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-2 font-bold">총 공부 시간</p>
+                <p className="text-3xl font-headline font-extrabold text-[#e5e2e1] tracking-tight">
+                  {formatStudyTime(studyDay.total_study_minutes)}
+                </p>
+              </div>
+              <div className="bg-[#1c1b1b] rounded-2xl p-6 text-center border border-white/5 flex flex-col justify-center items-center">
+                <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-2 font-bold">오늘의 성과</p>
+                <div className="relative inline-block">
+                  <p className="text-4xl font-headline font-extrabold text-[#7bdb85] drop-shadow-[0_0_15px_rgba(123,219,133,0.3)]">
+                    {getGrade(studyDay.avg_focus_ceil)}
+                  </p>
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-[#7bdb85] rounded-full animate-pulse" />
+                </div>
+              </div>
+            </section>
+          )}
         </div>
       )}
-    </div>
+    </main>
   );
 }

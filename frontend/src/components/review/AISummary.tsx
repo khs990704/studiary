@@ -6,15 +6,14 @@ export default function AISummary({ summary }: AISummaryProps) {
   if (!summary) return null;
 
   return (
-    <div className="overflow-hidden rounded-xl bg-[#1c1b1b] border border-[#3f4a3e]/60">
-      <div className="flex items-center gap-2.5 border-b border-[#3f4a3e]/60 bg-[#39994B]/10 px-5 py-3">
-        <span className="text-base">✨</span>
-        <span className="text-xs font-bold uppercase tracking-wider text-[#7bdb85]">AI 한 줄 요약</span>
+    <section>
+      <div className="bg-[#2a2a2a] rounded-2xl p-5 border-l-4 border-[#ffb1c1] shadow-lg shadow-[#ffb1c1]/5">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="material-symbols-outlined text-[#ffb1c1] text-lg">auto_awesome</span>
+          <h2 className="text-xs font-body font-bold uppercase tracking-widest text-[#ffb1c1]">AI 한줄 요약</h2>
+        </div>
+        <p className="text-[#e5e2e1] font-body leading-relaxed text-sm sm:text-base">{summary}</p>
       </div>
-      <div className="px-5 py-4">
-        <p className="text-sm leading-relaxed text-[#e5e2e1]">{summary}</p>
-        <p className="mt-2 text-[10px] text-[#becaba]/50 uppercase tracking-tighter">Analyzed by AI Assistant</p>
-      </div>
-    </div>
+    </section>
   );
 }

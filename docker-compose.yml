@@ -28,6 +28,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - "8200"
+    environment:
+      - TZ=Asia/Seoul
     env_file:
       - .env
     depends_on:

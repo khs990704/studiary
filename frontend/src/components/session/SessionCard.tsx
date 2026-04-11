@@ -25,7 +25,7 @@ interface SessionCardProps {
 
 export default function SessionCard({
   session,
-  studyIndex,
+  studyIndex: _studyIndex,
   isReview,
   timerState,
   onFocusChange,
@@ -40,78 +40,119 @@ export default function SessionCard({
 
   if (!isStudy) {
     return (
-      <div
-        className="flex items-center justify-center"
+      <section
+        className="flex flex-col sm:flex-row gap-4 sm:gap-6 group"
         data-testid={`session-card-${session.id}`}
       >
-        <div className="relative flex h-20 w-20 flex-col items-center justify-center rounded-full border border-[#3f4a3e] bg-[#1c1b1b]">
-          {!isReview && onDelete && (
-            <div className="absolute -top-1 -right-1">
-              <SessionMenu onDelete={onDelete} />
-            </div>
-          )}
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#becaba]/60">휴식</span>
-          {isRunning && timerState ? (
-            <TimerDisplay {...timerState} compact />
-          ) : (
-            <span className="text-sm font-bold tabular-nums text-[#becaba]">
-              {session.duration_minutes}분
-            </span>
-          )}
+        {/* Left badge - circle for rest */}
+        <div className="flex-shrink-0 flex items-center sm:block">
+          <div className="relative w-16 h-16 sm:w-24 sm:h-24 bg-[#a4c9ff]/10 rounded-full flex flex-col items-center justify-center text-[#a4c9ff] border border-[#a4c9ff]/10 transition-all group-hover:bg-[#a4c9ff]/20">
+            <span className="text-[8px] sm:text-[10px] uppercase tracking-widest font-bold opacity-70">rest</span>
+            {isRunning && timerState ? (
+              <TimerDisplay {...timerState} compact />
+            ) : (
+              <span className="font-headline font-bold text-base sm:text-lg">{session.duration_minutes}min</span>
+            )}
+            {/* Hover pause/resume overlay */}
+            {isRunning && timerState && (
+              <button
+                onClick={timerState.isPaused ? timerState.onResume : timerState.onPause}
+                className="absolute inset-0 rounded-full flex items-center justify-center bg-black/60 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                aria-label={timerState.isPaused ? '재생' : '일시정지'}
+              >
+                {timerState.isPaused ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-8 sm:w-8 text-[#a4c9ff]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-8 sm:w-8 text-[#a4c9ff]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                  </svg>
+                )}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+        {/* Right content - minimal for rest */}
+        <div className="flex-grow flex flex-col justify-start pt-2 sm:pt-6 pb-2 bg-transparent rounded-2xl px-5 sm:px-6 relative">
+          <div className="flex justify-end items-start">
+            {!isReview && onDelete && (
+              <SessionMenu onDelete={onDelete} />
+            )}
+          </div>
+        </div>
+      </section>
     );
   }
 
   return (
-    <div
-      className={`relative overflow-hidden rounded-xl bg-[#1c1b1b] transition-all duration-200 ${
-        isRunning ? 'border border-[#7bdb85]/40' : 'border border-[#3f4a3e]/60 hover:bg-[#201f1f]'
-      }`}
+    <section
+      className="flex flex-col sm:flex-row gap-4 sm:gap-6 group"
       data-testid={`session-card-${session.id}`}
     >
-      {/* Running indicator */}
-      {isRunning && (
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#7bdb85] to-[#44a354]" />
-      )}
-
-      <div className="p-4">
-        {/* Header */}
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold ${
-              isRunning ? 'bg-[#44a354] text-[#002107]' : 'bg-[#2a2a2a] text-[#becaba]'
-            }`}>
-              {studyIndex ?? session.order_num}
-            </div>
-            <span className="text-xs font-semibold text-[#e5e2e1]">공부 세션</span>
-            {!isRunning && (
-              <span className="rounded-full bg-[#2a2a2a] px-2 py-0.5 text-[11px] font-medium text-[#becaba]">
-                {session.duration_minutes}분
-              </span>
-            )}
-          </div>
-          {!isReview && onDelete && (
-            <SessionMenu onDelete={onDelete} />
+      {/* Left badge - rounded square for study */}
+      <div className="flex-shrink-0 flex items-center sm:block">
+        <div className={`relative w-16 h-16 sm:w-24 sm:h-24 rounded-xl flex flex-col items-center justify-center border transition-all ${
+          isRunning
+            ? 'bg-[#7bdb85]/20 text-[#7bdb85] border-[#7bdb85]/30'
+            : 'bg-[#7bdb85]/10 text-[#7bdb85] border-[#7bdb85]/10 group-hover:bg-[#7bdb85]/20'
+        }`}>
+          <span className="text-[8px] sm:text-[10px] uppercase tracking-widest font-bold opacity-70">study</span>
+          {isRunning && timerState ? (
+            <TimerDisplay {...timerState} compact />
+          ) : (
+            <span className="font-headline font-bold text-base sm:text-lg">{session.duration_minutes}min</span>
+          )}
+          {/* Hover pause/resume overlay */}
+          {isRunning && timerState && (
+            <button
+              onClick={timerState.isPaused ? timerState.onResume : timerState.onPause}
+              className="absolute inset-0 rounded-xl flex items-center justify-center bg-black/60 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+              aria-label={timerState.isPaused ? '재생' : '일시정지'}
+            >
+              {timerState.isPaused ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-8 sm:w-8 text-[#7bdb85]" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-8 sm:w-8 text-[#7bdb85]" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+              )}
+            </button>
           )}
         </div>
+      </div>
 
-        {/* Timer */}
-        {isRunning && timerState && (
-          <div className="mb-3 flex items-center gap-2 rounded-xl bg-[#39994B]/10 px-3 py-2">
-            <div className="h-2 w-2 animate-pulse rounded-full bg-[#7bdb85]" />
-            <TimerDisplay {...timerState} />
-          </div>
-        )}
-
-        {/* Focus & Distraction */}
-        <div className="flex flex-col gap-2.5">
+      {/* Right content area */}
+      <div className={`flex-grow flex flex-col justify-between pt-4 sm:pt-6 pb-4 rounded-2xl px-5 sm:px-6 relative transition-colors border ${
+        isRunning
+          ? 'bg-[#1c1b1b] border-[#7bdb85]/30'
+          : 'bg-[#1c1b1b] border-white/5 hover:bg-[#201f1f]'
+      }`}>
+        {/* Header with focus + menu */}
+        <div className="flex justify-between items-start">
           <FocusLevelInput
             value={isReview ? session.focus_level : (localFocusLevel ?? session.focus_level)}
             onChange={(level) => onFocusChange?.(level)}
             disabled={isReview}
           />
-          {(isRunning || session.status === 'completed' || session.distraction || isReview) && (
+          {!isReview && onDelete && (
+            <SessionMenu onDelete={onDelete} />
+          )}
+        </div>
+
+        {/* Timer for running session */}
+        {isRunning && timerState && (
+          <div className="mt-3 flex items-center gap-2 rounded-xl bg-[#39994B]/10 px-3 py-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-[#7bdb85]" />
+            <TimerDisplay {...timerState} />
+          </div>
+        )}
+
+        {/* Distraction input */}
+        {(isRunning || session.status === 'completed' || session.distraction || isReview) && (
+          <div className="mt-4 sm:mt-6">
             <DistractionInput
               value={
                 isReview
@@ -122,9 +163,9 @@ export default function SessionCard({
               onBlur={onDistractionBlur}
               disabled={isReview}
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }
