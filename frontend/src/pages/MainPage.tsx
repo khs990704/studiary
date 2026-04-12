@@ -75,12 +75,12 @@ export default function MainPage() {
       {/* Heatmap section */}
       <section className="bg-[#1c1b1b] rounded-xl p-6 space-y-5">
         {/* Section header */}
-        <div className="flex items-end justify-between">
+        <div className="flex flex-wrap items-end justify-between gap-y-3">
           <div className="space-y-1">
             <span className="text-[11px] font-bold uppercase tracking-widest text-[#7bdb85]">
               Progress Tracker
             </span>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               <h2 className="font-headline text-xl font-bold tracking-tight text-[#e5e2e1]">
                 잔디를 푸르게 푸르게
               </h2>
