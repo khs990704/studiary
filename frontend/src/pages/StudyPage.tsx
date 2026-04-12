@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import * as studyDaysApi from '../api/studyDays';
 import * as sessionsApi from '../api/sessions';
@@ -47,9 +47,11 @@ export default function StudyPage() {
   >(new Map());
 
   const today = date ? isToday(date) : false;
+  const timerKey = date ? `studiary_timer_${date}` : null;
 
   const handleTimerComplete = useCallback(() => {
     if (activeSessionId !== null) {
+      if (timerKey) localStorage.removeItem(timerKey);
       updateSession(activeSessionId, { status: 'completed' });
       const local = localStates.get(activeSessionId);
       if (local) {
@@ -62,9 +64,18 @@ export default function StudyPage() {
       }
       setActiveSessionId(null);
     }
-  }, [activeSessionId, updateSession, localStates]);
+  }, [activeSessionId, timerKey, updateSession, localStates]);
 
   const timer = useTimer(handleTimerComplete);
+  const { restoreTimer } = timer;
+
+  // 복원은 마운트당 한 번만 실행 (새 세션 추가로 sessions 변경 시 재실행 방지)
+  const hasRestoredRef = useRef(false);
+  // unmount 시 남은 시간을 저장하기 위한 refs (클로저 stale 방지)
+  const timerRemainingRef = useRef(0);
+  const activeSessionIdRef = useRef<string | null>(null);
+  timerRemainingRef.current = timer.remainingSeconds;
+  activeSessionIdRef.current = activeSessionId;
 
   const loadStudyDay = useCallback(async () => {
     if (!date) return;
@@ -104,6 +115,9 @@ export default function StudyPage() {
         next.set(session.id, { focusLevel: null, distraction: '' });
         return next;
       });
+      if (timerKey) {
+        localStorage.setItem(timerKey, JSON.stringify({ sessionId: session.id, remainingSeconds: minutes * 60 }));
+      }
       timer.startTimer(minutes);
       setShowTimerSetup(false);
     } catch (err: unknown) {
@@ -146,6 +160,7 @@ export default function StudyPage() {
     try {
       await sessionsApi.deleteSession(sessionId);
       if (sessionId === activeSessionId) {
+        if (timerKey) localStorage.removeItem(timerKey);
         timer.resetTimer();
         setActiveSessionId(null);
       }
@@ -249,6 +264,7 @@ export default function StudyPage() {
             }
           : prev
       );
+      if (timerKey) localStorage.removeItem(timerKey);
       timer.resetTimer();
       setActiveSessionId(null);
     } catch (err: unknown) {
@@ -258,6 +274,53 @@ export default function StudyPage() {
       setFinishing(false);
     }
   };
+
+  // 타이머 tick마다 localStorage 동기화 (새로고침 포함 모든 이탈 대응)
+  useEffect(() => {
+    if (!timerKey || !activeSessionId || timer.remainingSeconds <= 0) return;
+    const savedStr = localStorage.getItem(timerKey);
+    if (!savedStr) return;
+    try {
+      const saved = JSON.parse(savedStr) as { sessionId: string; remainingSeconds: number };
+      if (saved.sessionId === activeSessionId) {
+        localStorage.setItem(timerKey, JSON.stringify({ ...saved, remainingSeconds: timer.remainingSeconds }));
+      }
+    } catch {}
+  }, [timerKey, activeSessionId, timer.remainingSeconds]);
+
+  // 페이지 복귀 시 타이머 복원 — 마운트당 한 번만, 저장된 초를 그대로 사용
+  useEffect(() => {
+    if (loading || !timerKey || hasRestoredRef.current) return;
+    hasRestoredRef.current = true;
+    const saved = localStorage.getItem(timerKey);
+    if (!saved) return;
+    try {
+      const { sessionId, remainingSeconds } = JSON.parse(saved) as { sessionId: string; remainingSeconds: number };
+      const sessionExists = sessions.some((s) => s.id === sessionId);
+      if (!sessionExists) {
+        localStorage.removeItem(timerKey);
+        return;
+      }
+      if (remainingSeconds > 0) {
+        setActiveSessionId(sessionId);
+        setLocalStates((prev) => {
+          if (prev.has(sessionId)) return prev;
+          const next = new Map(prev);
+          const sessionData = sessions.find((s) => s.id === sessionId);
+          next.set(sessionId, {
+            focusLevel: sessionData?.focus_level ?? null,
+            distraction: sessionData?.distraction ?? '',
+          });
+          return next;
+        });
+        restoreTimer(remainingSeconds, true);
+      } else {
+        localStorage.removeItem(timerKey);
+      }
+    } catch {
+      localStorage.removeItem(timerKey);
+    }
+  }, [sessions, loading, timerKey, restoreTimer]);
 
   if (loading) return <LoadingSpinner />;
 

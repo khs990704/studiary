@@ -6,6 +6,7 @@ interface UseTimerReturn {
   isPaused: boolean;
   isCompleted: boolean;
   startTimer: (durationMinutes: number) => void;
+  restoreTimer: (remainingSeconds: number, startPaused?: boolean) => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
   resetTimer: () => void;
@@ -60,11 +61,26 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
     setIsRunning(false);
   }, [clearTimer]);
 
+  const restoreTimer = useCallback(
+    (seconds: number, startPaused = false) => {
+      clearTimer();
+      setRemainingSeconds(seconds);
+      setIsRunning(!startPaused);
+      setIsPaused(startPaused);
+      setIsCompleted(false);
+      if (!startPaused) {
+        intervalRef.current = setInterval(tick, 1000);
+      }
+    },
+    [clearTimer, tick]
+  );
+
   const resumeTimer = useCallback(() => {
+    clearTimer();
     setIsPaused(false);
     setIsRunning(true);
     intervalRef.current = setInterval(tick, 1000);
-  }, [tick]);
+  }, [clearTimer, tick]);
 
   const resetTimer = useCallback(() => {
     clearTimer();
@@ -84,6 +100,7 @@ export function useTimer(onComplete?: () => void): UseTimerReturn {
     isPaused,
     isCompleted,
     startTimer,
+    restoreTimer,
     pauseTimer,
     resumeTimer,
     resetTimer,

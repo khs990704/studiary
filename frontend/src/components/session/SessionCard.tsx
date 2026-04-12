@@ -143,12 +143,12 @@ export default function SessionCard({
         </div>
 
         {/* Timer for running session */}
-        {isRunning && timerState && (
+        {/* {isRunning && timerState && (
           <div className="mt-3 flex items-center gap-2 rounded-xl bg-[#39994B]/10 px-3 py-2">
             <div className="h-2 w-2 animate-pulse rounded-full bg-[#7bdb85]" />
             <TimerDisplay {...timerState} />
           </div>
-        )}
+        )} */}
 
         {/* Distraction input */}
         {(isRunning || session.status === 'completed' || session.distraction || isReview) && (
