@@ -185,6 +185,11 @@ export default function StudyPage() {
     }
 
     if (!isFinished) {
+      const scrollToSession = (sessionId: string) => {
+        const el = document.querySelector(`[data-testid="session-card-${sessionId}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
       const missingFocusSession = sessions
         .filter((s) => s.type === 'study')
         .find((s) => {
@@ -195,12 +200,21 @@ export default function StudyPage() {
 
       if (missingFocusSession) {
         alert('집중도는 필수 입력 요소입니다');
-        const el = document.querySelector(
-          `[data-testid="session-card-${missingFocusSession.id}"]`
-        );
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        scrollToSession(missingFocusSession.id);
+        return;
+      }
+
+      const missingDistractionSession = sessions
+        .filter((s) => s.type === 'study')
+        .find((s) => {
+          const local = localStates.get(s.id);
+          const effectiveDistraction = local ? local.distraction : s.distraction;
+          return !effectiveDistraction;
+        });
+
+      if (missingDistractionSession) {
+        alert('방해요소는 필수 입력 요소입니다');
+        scrollToSession(missingDistractionSession.id);
         return;
       }
     }
