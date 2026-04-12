@@ -30,11 +30,15 @@ export default function FocusChart({ sessions }: FocusChartProps) {
   }
 
   const focusValues = studySessions.map((s) => s.focus_level ?? 0);
-  const avg = focusValues.reduce((a, b) => a + b, 0) / focusValues.length;
+  const nonZeroValues = focusValues.filter((v) => v > 0);
+  const avg = nonZeroValues.length > 0
+    ? nonZeroValues.reduce((a, b) => a + b, 0) / nonZeroValues.length
+    : 0;
 
+  // Y축: 0~5 범위, 0이 하단(y=100), 5가 상단(y=0)
   const points = focusValues.map((val, i) => ({
     x: studySessions.length === 1 ? 50 : (i / (studySessions.length - 1)) * 100,
-    y: 100 - ((val - 1) / 4) * 100,
+    y: 100 - (val / 5) * 100,
   }));
 
   const linePath = buildPath(points);
@@ -44,7 +48,9 @@ export default function FocusChart({ sessions }: FocusChartProps) {
     <section className="space-y-4">
       <div className="flex justify-between items-end px-1">
         <h2 className="text-lg font-headline font-bold text-[#e5e2e1]">집중도 변화</h2>
-        <span className="text-xs font-bold text-[#7bdb85]">평균 레벨 {avg.toFixed(1)}</span>
+        <span className="text-xs font-bold text-[#7bdb85]">
+          {nonZeroValues.length > 0 ? `평균 레벨 ${avg.toFixed(1)}` : '집중도 미입력'}
+        </span>
       </div>
       <div className="bg-[#1c1b1b] rounded-2xl p-4 sm:p-8 border border-white/5 relative overflow-hidden">
         <div className="h-64 sm:h-72 w-full relative">
@@ -55,11 +61,13 @@ export default function FocusChart({ sessions }: FocusChartProps) {
             <span>3</span>
             <span>2</span>
             <span>1</span>
+            <span>0</span>
           </div>
           {/* Graph Container */}
           <div className="ml-8 h-full relative">
             {/* Horizontal Grid Lines */}
             <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+              <div className="w-full h-px bg-white/5" />
               <div className="w-full h-px bg-white/5" />
               <div className="w-full h-px bg-white/5" />
               <div className="w-full h-px bg-white/5" />
